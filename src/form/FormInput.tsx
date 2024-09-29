@@ -1,7 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { FormField } from "../../types";
-
+import { FormField } from "../types";
+import { Select, SelectItem } from "../components/ui/select"; 
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
+import { Label } from "../components/ui/label";
 
 type FormInputProps = {
   field: FormField;
@@ -25,31 +27,25 @@ const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
   const renderInput = () => {
     switch (field.type) {
       case "select":
-      case "multiselect":
         return (
-          <select {...commonProps} multiple={field.type === "multiselect"}>
+          <Select {...commonProps}>
             {field.options?.map((option, idx) => (
-              <option key={idx} value={option.value}>
+              <SelectItem key={idx} value={option.value}>
                 {option.label}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         );
       case "radio":
-      case "checkbox":
         return (
-          <div className="mt-1">
+          <RadioGroup {...commonProps} defaultValue={field.label}>
             {field.options?.map((option, idx) => (
-              <label key={idx} className="inline-flex items-center mr-4">
-                <input
-                  type={field.type}
-                  value={option.value}
-                  {...register(field.name)}
-                />
-                <span className="ml-2">{option.label}</span>
-              </label>
+              <div key={idx} className="flex items-center space-x-2">
+                <RadioGroupItem value={option.value} id={option.value} />
+                <Label htmlFor={option.value}>{option.label}</Label>
+              </div>
             ))}
-          </div>
+          </RadioGroup>
         );
       default:
         return <input type={field.type} {...commonProps} />;
