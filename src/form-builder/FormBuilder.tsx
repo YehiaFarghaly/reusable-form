@@ -1,4 +1,3 @@
-// FormBuilder.tsx
 import React, { useState } from "react";
 import { FormSection as FormSectionType } from "../types";
 import FormSection from "./FormSection";
@@ -43,7 +42,7 @@ const FormBuilder: React.FC<{
             checked={isMultiStep}
             onChange={() => setIsMultiStep(!isMultiStep)}
           />
-          Enable Multi-Step Form (Each section will be a separate step)
+          Make Each Section A Separate Step
         </label>
       </div>
       {formSections.map((section, index) => (

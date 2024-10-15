@@ -1,4 +1,3 @@
-// FormComponent.tsx
 import React, { useState } from "react";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -31,10 +30,8 @@ const FormComponent: React.FC<FormComponentProps> = ({
 
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Total steps are equal to the number of sections if multi-step is enabled
   const totalSteps = isMultiStep ? formSections.length : 1;
 
-  // Handler to move to the next step
   const handleNext = async () => {
     if (isMultiStep) {
       const currentSection = formSections[currentStep];
@@ -46,22 +43,11 @@ const FormComponent: React.FC<FormComponentProps> = ({
     }
   };
 
-  // Handler to move to the previous step
   const handlePrev = () => {
     if (isMultiStep && currentStep > 0) {
       setCurrentStep(prev => prev - 1);
     }
   };
-
-  // Determine the fields to display based on the current step
-  const getCurrentFields = () => {
-    if (!isMultiStep) {
-      return formSections.flatMap(section => section.rows.flat());
-    }
-    return formSections[currentStep].rows.flat();
-  };
-
-  const currentFields = getCurrentFields();
 
   return (
     <form

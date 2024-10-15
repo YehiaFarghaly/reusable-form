@@ -1,4 +1,3 @@
-// App.tsx
 import React, { useState } from "react";
 import * as yup from "yup";
 import FormComponent from "./form/FormComponent";

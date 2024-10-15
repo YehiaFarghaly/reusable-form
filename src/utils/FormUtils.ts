@@ -1,26 +1,5 @@
-import { FormField } from "../types";
 import * as yup from 'yup';
 import { FormSection } from "../types";
-
-export const getCurrentFields = (fields: FormField[], step: number, fieldsPerPage: number) => {
-  return fields.slice(step * fieldsPerPage, (step + 1) * fieldsPerPage);
-};
-
-export const handleNext = async (
-  step: number,
-  setStep: (step: number) => void,
-  steps: number
-) => {
-  if ( step < steps - 1) {
-    setStep(step + 1);
-  }
-};
-
-export const handleBack = (step: number, setStep: (step: number) => void) => {
-  if (step > 0) setStep(step - 1);
-};
-
-
 
 export const generateValidationSchema = (sections: FormSection[]) => {
   const schema = sections.reduce((schemaAcc, section) => {
@@ -29,7 +8,6 @@ export const generateValidationSchema = (sections: FormSection[]) => {
         if (field.validations) {
           let validator: yup.AnySchema;
 
-          // Initialize the validator based on the field type
           switch (field.type) {
             case "number":
               validator = yup.number();
@@ -43,12 +21,10 @@ export const generateValidationSchema = (sections: FormSection[]) => {
             case "checkbox":
               validator = yup.boolean();
               break;
-            // Add other field types as needed
             default:
               validator = yup.string();
           }
 
-          // Apply each validation rule
           field.validations.forEach((validation) => {
             switch (validation.type) {
               case "required":
@@ -109,8 +85,6 @@ export const generateValidationSchema = (sections: FormSection[]) => {
                 break;
               case "custom":
                 try {
-                  // Implement custom validation based on any custom logic. 
-                  // You can evaluate custom JS expressions here if required
                   const customValidation = new Function('yup', `return yup.${validation.value};`)(yup);
                   validator = validator.concat(customValidation);
                 } catch (err) {
@@ -122,7 +96,6 @@ export const generateValidationSchema = (sections: FormSection[]) => {
             }
           });
 
-          // Assign the constructed validator to the schema
           schemaAcc[field.name] = validator;
         }
       });
