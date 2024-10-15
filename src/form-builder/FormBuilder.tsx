@@ -1,11 +1,13 @@
+// FormBuilder.tsx
 import React, { useState } from "react";
 import { FormSection as FormSectionType } from "../types";
 import FormSection from "./FormSection";
 
 const FormBuilder: React.FC<{
-  onSave: (formSections: FormSectionType[]) => void;
+  onSave: (formSections: FormSectionType[], isMultiStep: boolean) => void;
 }> = ({ onSave }) => {
   const [formSections, setFormSections] = useState<FormSectionType[]>([]);
+  const [isMultiStep, setIsMultiStep] = useState(false);
 
   const addSection = () => {
     const newSection: FormSectionType = {
@@ -28,11 +30,22 @@ const FormBuilder: React.FC<{
   };
 
   const handleSave = () => {
-    onSave(formSections);
+    onSave(formSections, isMultiStep);
   };
 
   return (
     <div className="p-6 bg-gray-100">
+      <div className="mb-4">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            className="mr-3"
+            checked={isMultiStep}
+            onChange={() => setIsMultiStep(!isMultiStep)}
+          />
+          Enable Multi-Step Form (Each section will be a separate step)
+        </label>
+      </div>
       {formSections.map((section, index) => (
         <FormSection
           key={index}

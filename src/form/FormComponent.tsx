@@ -1,3 +1,4 @@
+// FormComponent.tsx
 import React, { useState } from "react";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,7 +12,6 @@ type FormComponentProps = {
   onSubmit: SubmitHandler<any>;
   validationSchema: yup.ObjectSchema<any>;
   isMultiStep?: boolean;
-  fieldsPerPage?: number;
 };
 
 const FormComponent: React.FC<FormComponentProps> = ({
@@ -19,7 +19,6 @@ const FormComponent: React.FC<FormComponentProps> = ({
   onSubmit,
   validationSchema,
   isMultiStep = false,
-  fieldsPerPage = 1,
 }) => {
   const { register, control, handleSubmit, formState: { errors }, trigger } = useForm({
     resolver: yupResolver(validationSchema),
@@ -27,30 +26,42 @@ const FormComponent: React.FC<FormComponentProps> = ({
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "dynamicFields", 
+    name: "dynamicFields",
   });
 
   const [currentStep, setCurrentStep] = useState(0);
 
-  const allFields = formSections.flatMap((section) => section.rows.flat());
+  // Total steps are equal to the number of sections if multi-step is enabled
+  const totalSteps = isMultiStep ? formSections.length : 1;
 
-  const totalSteps = isMultiStep ? Math.ceil(allFields.length / fieldsPerPage) : 1;
-
-  const handleNext = () => {
-    if (currentStep < totalSteps - 1) {
-      setCurrentStep(currentStep + 1);
+  // Handler to move to the next step
+  const handleNext = async () => {
+    if (isMultiStep) {
+      const currentSection = formSections[currentStep];
+      const fieldNames = currentSection.rows.flat().map(field => field.name);
+      const isValid = await trigger(fieldNames);
+      if (isValid) {
+        setCurrentStep(prev => prev + 1);
+      }
     }
   };
 
+  // Handler to move to the previous step
   const handlePrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+    if (isMultiStep && currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
     }
   };
 
-  const startIdx = currentStep * fieldsPerPage;
-  const endIdx = startIdx + fieldsPerPage;
-  const currentFields = allFields.slice(startIdx, endIdx);
+  // Determine the fields to display based on the current step
+  const getCurrentFields = () => {
+    if (!isMultiStep) {
+      return formSections.flatMap(section => section.rows.flat());
+    }
+    return formSections[currentStep].rows.flat();
+  };
+
+  const currentFields = getCurrentFields();
 
   return (
     <form
@@ -60,83 +71,18 @@ const FormComponent: React.FC<FormComponentProps> = ({
     >
       {isMultiStep ? (
         <>
-          {currentFields.map((field) => {
-            if (field.isDynamic) {
-              return (
-                <div key={field.name} className="col-span-12">
-                  {fields.map((item, index) => (
-                    <div key={item.id} className="flex items-center space-x-2">
-                      <FormInput
-                        field={{
-                          name: `dynamicFields.${index}.value`,
-                          type: field.type,
-                          label: `${field.label} ${index + 1}`,
-                        }}
-                        register={register}
-                      />
-                      <Button
-                        text="Remove"
-                        type="button"
-                        onClick={() => remove(index)}
-                      />
-                    </div>
-                  ))}
-                  <Button
-                    text={`Add ${field.label}`}
-                    type="button"
-                    onClick={() => append({ value: "" })}
-                  />
-                </div>
-              );
-            }
-
-            return (
-              <FormInput
-                key={field.name}
-                field={field}
-                register={register}
-                error={errors[field.name]?.message as string}
-              />
-            );
-          })}
-          <div className="col-span-12 flex justify-between mt-4">
-            <Button
-              text="Previous"
-              type="button"
-              onClick={handlePrev}
-              disabled={currentStep === 0}
-            />
-            {currentStep === totalSteps - 1 ? (
-              <Button text="Submit" type="submit" />
-            ) : (
-              <Button
-                text="Next"
-                type="button"
-                onClick={async () => {
-                  const currentFieldsNames = currentFields.map((field) => field.name);
-                  const isValid = await trigger(currentFieldsNames);
-                  if (isValid) {
-                    handleNext();
-                  }
-                }}
-              />
-            )}
-          </div>
-        </>
-      ) : (
-        formSections.map((section, sectionIdx) => (
-          <div key={sectionIdx} className="col-span-12">
-            <h2 className="text-lg font-medium text-gray-700 mb-4">
-              {section.sectionName}
+          <div className="col-span-12">
+            <h2 className="text-xl font-semibold mb-4">
+              {formSections[currentStep].sectionName}
             </h2>
-            {section.rows.map((row, rowIdx) => (
+            {formSections[currentStep].rows.map((row, rowIdx) => (
               <div key={rowIdx} className="grid grid-cols-12 gap-6 mb-4">
                 {row.map((field) => {
                   if (field.isDynamic) {
                     return (
                       <div key={field.name} className="col-span-12">
                         {fields.map((item, index) => (
-                          <div key={item.id} className="flex items-center space-x-2">
+                          <div key={item.id} className="flex items-center space-x-2 mb-2">
                             <FormInput
                               field={{
                                 name: `dynamicFields.${index}.value`,
@@ -173,7 +119,79 @@ const FormComponent: React.FC<FormComponentProps> = ({
               </div>
             ))}
           </div>
-        ))
+          <div className="col-span-12 flex justify-between mt-4">
+            <Button
+              text="Previous"
+              type="button"
+              onClick={handlePrev}
+              disabled={currentStep === 0}
+            />
+            {currentStep === totalSteps - 1 ? (
+              <Button text="Submit" type="submit" />
+            ) : (
+              <Button text="Next" type="button" onClick={handleNext} />
+            )}
+          </div>
+          <div className="col-span-12 mt-2 text-center text-gray-500">
+            Step {currentStep + 1} of {totalSteps}
+          </div>
+        </>
+      ) : (
+        <>
+          {formSections.map((section, sectionIdx) => (
+            <div key={sectionIdx} className="col-span-12">
+              <h2 className="text-xl font-semibold mb-4">
+                {section.sectionName}
+              </h2>
+              {section.rows.map((row, rowIdx) => (
+                <div key={rowIdx} className="grid grid-cols-12 gap-6 mb-4">
+                  {row.map((field) => {
+                    if (field.isDynamic) {
+                      return (
+                        <div key={field.name} className="col-span-12">
+                          {fields.map((item, index) => (
+                            <div key={item.id} className="flex items-center space-x-2 mb-2">
+                              <FormInput
+                                field={{
+                                  name: `dynamicFields.${index}.value`,
+                                  type: field.type,
+                                  label: `${field.label} ${index + 1}`,
+                                }}
+                                register={register}
+                              />
+                              <Button
+                                text="Remove"
+                                type="button"
+                                onClick={() => remove(index)}
+                              />
+                            </div>
+                          ))}
+                          <Button
+                            text={`Add ${field.label}`}
+                            type="button"
+                            onClick={() => append({ value: "" })}
+                          />
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <FormInput
+                        key={field.name}
+                        field={field}
+                        register={register}
+                        error={errors[field.name]?.message as string}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          ))}
+          <div className="col-span-12 flex justify-end mt-4">
+            <Button text="Submit" type="submit" />
+          </div>
+        </>
       )}
     </form>
   );

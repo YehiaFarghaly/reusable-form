@@ -86,13 +86,16 @@ const ValidationEditor: React.FC<ValidationEditorProps> = ({
     <div className="mb-2">
       <label className="block text-sm">Validations:</label>
       {validations.map((validation, index) => (
-        <div key={index} className="flex items-center mb-1">
+        <div
+          key={index}
+          className="flex items-center mb-1 min-w-0 flex-wrap" 
+        >
           <select
             value={validation.type}
             onChange={(e) =>
               handleValidationChange(index, "type", e.target.value)
             }
-            className="border p-1 mr-2"
+            className="border p-1 mr-2 flex-shrink-0" 
           >
             <option value="required">Required</option>
             <option value="min">Min</option>
@@ -112,11 +115,11 @@ const ValidationEditor: React.FC<ValidationEditorProps> = ({
               handleValidationChange(index, "message", e.target.value)
             }
             placeholder="Message"
-            className="border p-1 mr-2 flex-1"
+            className="border p-1 mr-2 flex-1 min-w-0" 
           />
           <button
             onClick={() => removeValidation(index)}
-            className="text-red-500"
+            className="text-red-500 flex-shrink-0"
           >
             Remove
           </button>
