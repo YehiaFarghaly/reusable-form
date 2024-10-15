@@ -66,7 +66,7 @@ const FormRow: React.FC<FormRowProps> = ({
         <div className="col-span-12">
           <button
             onClick={addField}
-            className="text-blue-500 text-sm"
+            className="text-purple-500 text-sm"
           >
             Add Field
           </button>

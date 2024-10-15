@@ -45,7 +45,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
     const handleDynamicToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange({ ...field, isDynamic: e.target.checked });
-      };
+    };
 
     return (
         <div className="border p-2 rounded">
@@ -76,6 +76,16 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                 />
             </div>
             <div className="mb-2">
+                <input
+                    type="checkbox"
+                    name="isDynamic"
+                    checked={field.isDynamic || false}
+                    onChange={handleDynamicToggle}
+                    className="mr-2"
+                />
+                <span>Dynamic Field</span>
+            </div>
+            <div className="mb-2">
                 <label className="block text-sm">Type:</label>
                 <select
                     name="type"
@@ -91,16 +101,6 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                 </select>
             </div>
 
-            <div className="mb-2">
-                <input
-                    type="checkbox"
-                    name="isDynamic"
-                    checked={field.isDynamic || false}
-                    onChange={handleDynamicToggle}
-                    className="mr-2"
-                />
-                <span>Dynamic Field</span>
-            </div>
             {showOptions && (
                 <OptionEditor
                     options={field.options || []}

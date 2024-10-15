@@ -18,7 +18,7 @@ const OptionEditor: React.FC<OptionEditorProps> = ({ options, onChange }) => {
   };
 
   const addOption = () => {
-    const newOption: FormFieldOption = { label: "Option", value: "option" };
+    const newOption: FormFieldOption = { label: "label", value: "value" };
     onChange([...options, newOption]);
   };
 
@@ -59,7 +59,7 @@ const OptionEditor: React.FC<OptionEditorProps> = ({ options, onChange }) => {
           </button>
         </div>
       ))}
-      <button onClick={addOption} className="text-blue-500 text-sm">
+      <button onClick={addOption} className="text-purple-500 text-sm">
         Add Option
       </button>
     </div>

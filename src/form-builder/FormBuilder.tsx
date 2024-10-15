@@ -33,9 +33,9 @@ const FormBuilder: React.FC<{
   };
 
   return (
-    <div className="p-6 bg-gray-100">
+    <div className="p-6 bg-gray-600">
       <div className="mb-4">
-        <label className="flex items-center">
+        <label className="flex items-center text-white">
           <input
             type="checkbox"
             className="mr-3"
@@ -54,7 +54,7 @@ const FormBuilder: React.FC<{
           onRemove={() => removeSection(index)}
         />
       ))}
-      <button onClick={addSection} className="mb-4 text-blue-500">
+      <button onClick={addSection} className="mb-4 text-white">
         Add Section
       </button>
       <br />

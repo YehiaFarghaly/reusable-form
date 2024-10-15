@@ -125,7 +125,7 @@ const ValidationEditor: React.FC<ValidationEditorProps> = ({
           </button>
         </div>
       ))}
-      <button onClick={addValidation} className="text-blue-500 text-sm">
+      <button onClick={addValidation} className="text-purple-500 text-sm">
         Add Validation
       </button>
     </div>

@@ -37,7 +37,7 @@ const FormSection: React.FC<FormSectionProps> = ({
   };
 
   return (
-    <div className="mb-6 p-4 bg-white rounded shadow">
+    <div className="mb-6 p-4 bg-white rounded">
       <div className="flex justify-between items-center mb-2">
         <input
           type="text"
@@ -59,7 +59,7 @@ const FormSection: React.FC<FormSectionProps> = ({
           onRemoveRow={() => removeRow(rowIndex)}
         />
       ))}
-      <button onClick={addRow} className="text-green-500">
+      <button onClick={addRow} className="text-blue-500 text-sm">
         Add Row
       </button>
     </div>
