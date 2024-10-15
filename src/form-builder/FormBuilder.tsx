@@ -1,4 +1,3 @@
-// FormBuilder.tsx
 import React, { useState } from "react";
 import { FormSection as FormSectionType } from "../types";
 import FormSection from "./FormSection";
@@ -34,7 +33,6 @@ const FormBuilder: React.FC<{
 
   return (
     <div className="p-6 bg-gray-100">
-      <h2 className="text-2xl mb-4">Form Builder</h2>
       {formSections.map((section, index) => (
         <FormSection
           key={index}

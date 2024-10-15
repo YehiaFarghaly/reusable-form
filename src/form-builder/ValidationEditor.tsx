@@ -1,4 +1,3 @@
-// ValidationEditor.tsx
 import React from "react";
 import { FormValidation } from "../types";
 
@@ -38,6 +37,51 @@ const ValidationEditor: React.FC<ValidationEditorProps> = ({
     onChange(updatedValidations);
   };
 
+  const renderInputField = (validation: FormValidation, index: number) => {
+    switch (validation.type) {
+      case "min":
+      case "max":
+      case "length":
+        return (
+          <input
+            type="number"
+            value={validation.value || ""}
+            onChange={(e) =>
+              handleValidationChange(index, "value", e.target.value)
+            }
+            placeholder="Value"
+            className="border p-1 mr-2"
+          />
+        );
+      case "pattern":
+        return (
+          <input
+            type="text"
+            value={validation.value || ""}
+            onChange={(e) =>
+              handleValidationChange(index, "pattern", e.target.value)
+            }
+            placeholder="Regex Pattern"
+            className="border p-1 mr-2"
+          />
+        );
+      case "custom":
+        return (
+          <input
+            type="text"
+            value={validation.value || ""}
+            onChange={(e) =>
+              handleValidationChange(index, "value", e.target.value)
+            }
+            placeholder="Custom Validation"
+            className="border p-1 mr-2"
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="mb-2">
       <label className="block text-sm">Validations:</label>
@@ -54,18 +98,13 @@ const ValidationEditor: React.FC<ValidationEditorProps> = ({
             <option value="min">Min</option>
             <option value="max">Max</option>
             <option value="email">Email</option>
+            <option value="length">Length</option>
+            <option value="pattern">Pattern (Regex)</option>
+            <option value="custom">Custom</option>
           </select>
-          {["min", "max"].includes(validation.type) && (
-            <input
-              type="text"
-              value={validation.value || ""}
-              onChange={(e) =>
-                handleValidationChange(index, "value", e.target.value)
-              }
-              placeholder="Value"
-              className="border p-1 mr-2"
-            />
-          )}
+
+          {renderInputField(validation, index)}
+
           <input
             type="text"
             value={validation.message}

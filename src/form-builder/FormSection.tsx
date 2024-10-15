@@ -1,4 +1,3 @@
-// FormSection.tsx
 import React from "react";
 import { FormSection as FormSectionType } from "../types";
 import FormRow from "./FormRow";

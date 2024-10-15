@@ -21,6 +21,7 @@ export const handleBack = (step: number, setStep: (step: number) => void) => {
 };
 
 
+
 export const generateValidationSchema = (sections: FormSection[]) => {
   const schema = sections.reduce((schemaAcc, section) => {
     section.rows.forEach((row) => {
@@ -90,12 +91,32 @@ export const generateValidationSchema = (sections: FormSection[]) => {
                 }
                 break;
               case "email":
-                // If field type is not already string with email, ensure it's string
                 if (field.type !== "email") {
                   validator = (validator as yup.StringSchema).email(validation.message);
                 }
                 break;
-              // Add more validation types as needed
+              case "length":
+                validator = (validator as yup.StringSchema).length(
+                  Number(validation.value),
+                  validation.message
+                );
+                break;
+              case "pattern":
+                validator = (validator as yup.StringSchema).matches(
+                  new RegExp(validation.value),
+                  validation.message
+                );
+                break;
+              case "custom":
+                try {
+                  // Implement custom validation based on any custom logic. 
+                  // You can evaluate custom JS expressions here if required
+                  const customValidation = new Function('yup', `return yup.${validation.value};`)(yup);
+                  validator = validator.concat(customValidation);
+                } catch (err) {
+                  console.warn(`Invalid custom validation: ${validation.value}`);
+                }
+                break;
               default:
                 break;
             }
@@ -111,4 +132,3 @@ export const generateValidationSchema = (sections: FormSection[]) => {
 
   return yup.object().shape(schema) as yup.ObjectSchema<any>;
 };
-

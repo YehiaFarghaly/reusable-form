@@ -1,4 +1,3 @@
-// OptionEditor.tsx
 import React from "react";
 import { FormFieldOption } from "../types";
 
