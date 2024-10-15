@@ -51,7 +51,7 @@ const App: React.FC = () => {
         [
           {
             name: "gender",
-            type: "radio",
+            type: "select",
             label: "Gender",
             options: [
               { label: "Male", value: "male" },
@@ -60,6 +60,15 @@ const App: React.FC = () => {
             gridLayout: "col-span-12",
             validation: yup.string().required("gender is required"),
           },
+
+          {
+            name: "percentage",
+
+            type: "slider",
+            label: "Percentage",
+            gridLayout: "col-span-12",
+
+          }
         ],
       ],
     },

@@ -1,9 +1,17 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { FormField } from "../types";
-import { Select, SelectItem } from "../components/ui/select"; 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "../components/ui/select";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Label } from "../components/ui/label";
+import { Input } from "../components/ui/input";
+import { Slider } from "../components/ui/slider";
 
 type FormInputProps = {
   field: FormField;
@@ -29,12 +37,18 @@ const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
       case "select":
         return (
           <Select {...commonProps}>
-            {field.options?.map((option, idx) => (
-              <SelectItem key={idx} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              {field.options?.map((option, idx) => (
+                <SelectItem key={idx} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
+
         );
       case "radio":
         return (
@@ -47,8 +61,13 @@ const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
             ))}
           </RadioGroup>
         );
+
+      case "slider":
+        return (
+          <Slider defaultValue={[33]} max={100} step={1} />
+        )
       default:
-        return <input type={field.type} {...commonProps} />;
+        return <Input type={field.type} {...commonProps} />;
     }
   };
 
