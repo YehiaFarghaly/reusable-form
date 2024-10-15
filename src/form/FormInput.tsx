@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Slider } from "../components/ui/slider";
+import { Checkbox } from "../components/ui/checkbox";
 
 type FormInputProps = {
   field: FormField;
@@ -61,10 +62,21 @@ const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
             ))}
           </RadioGroup>
         );
-
       case "slider":
         return (
-          <Slider defaultValue={[33]} max={100} step={1} />
+          <Slider defaultValue={[20]} max={100} step={1} />
+        )
+      case "checkbox":
+        return (
+          <div className="flex items-center space-x-2">
+            <Checkbox id="checkbox" />
+            <Label
+              htmlFor="checkbox"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {field.name}
+            </Label>
+          </div>
         )
       default:
         return <Input type={field.type} {...commonProps} />;

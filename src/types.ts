@@ -1,11 +1,23 @@
+// types.ts
+export interface FormFieldOption {
+  label: string;
+  value: string;
+}
+
+export interface FormValidation {
+  type: string;
+  value?: any;  
+  message: string;
+}
+
 export interface FormField {
   name: string;
   label: string;
   type: string;
-  validation?: any;
-  options?: { label: string; value: string }[];
+  options?: FormFieldOption[]; 
   gridLayout?: string;
   isDynamic?: boolean;
+  validations?: FormValidation[];
 }
 
 export interface FormRow extends Array<FormField> {}
