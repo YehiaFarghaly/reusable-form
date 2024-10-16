@@ -53,7 +53,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
     <form
       noValidate
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-12 gap-6 bg-white p-6 rounded-lg"
+      className="grid grid-cols-12 gap-6 bg-gray-200 p-6 rounded-lg"
     >
       {isMultiStep ? (
         <>

@@ -13,6 +13,7 @@ import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Slider } from "../components/ui/slider";
 import { Checkbox } from "../components/ui/checkbox";
+import { AiFillApple } from 'react-icons/ai'
 
 type FormInputProps = {
   field: FormField;
@@ -24,13 +25,20 @@ const FormLabel: React.FC<{ label: string }> = ({ label }) => (
   <label className="block text-sm font-medium text-gray-700">{label}</label>
 );
 
-const ErrorMessage: React.FC<{ message?: string }> = ({ message }) =>
-  message ? <p className="text-red-500 text-sm mt-1">{message}</p> : null;
+const ErrorMessage: React.FC<{ message?: string; position?: string }> = ({ message, position = "bottom" }) =>
+  message ? (
+    <p className={`text-red-500 text-sm mt-1 ${position === "top" ? "order-first" : ""}`}>
+      {message}
+    </p>
+  ) : null;
 
 const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
+  const { validationPosition = "bottom", size = "medium", iconEnabled = false } = field.uiSettings || {};
+
+  const sizeClass = size === "small" ? "text-sm" : size === "large" ? "text-lg" : "text-base";
   const commonProps = {
     ...register(field.name),
-    className: `mt-1 p-2 block w-full sm:text-sm border border-gray-400 rounded-lg`,
+    className: `mt-1 p-2 block w-full sm:text-sm border border-gray-400 rounded-lg ${sizeClass}`,
   };
 
   const renderInput = () => {
@@ -49,7 +57,6 @@ const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
               ))}
             </SelectContent>
           </Select>
-
         );
       case "radio":
         return (
@@ -63,21 +70,16 @@ const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
           </RadioGroup>
         );
       case "slider":
-        return (
-          <Slider defaultValue={[20]} max={100} step={1} />
-        )
+        return <Slider defaultValue={[20]} max={100} step={1} />;
       case "checkbox":
         return (
           <div className="flex items-center space-x-2">
             <Checkbox id="checkbox" />
-            <Label
-              htmlFor="checkbox"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
+            <Label htmlFor="checkbox" className="text-sm font-medium leading-none">
               {field.name}
             </Label>
           </div>
-        )
+        );
       default:
         return <Input type={field.type} {...commonProps} />;
     }
@@ -85,9 +87,13 @@ const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
 
   return (
     <div className={field.gridLayout || "col-span-12"}>
-      <FormLabel label={field.label} />
+      <div className="flex items-center space-x-2">
+        {iconEnabled && <AiFillApple className="text-xl" />}
+        <FormLabel label={field.label} />
+      </div>
+      {validationPosition === "top" && <ErrorMessage message={error} position="top" />}
       {renderInput()}
-      <ErrorMessage message={error} />
+      {validationPosition === "bottom" && <ErrorMessage message={error} />}
     </div>
   );
 };

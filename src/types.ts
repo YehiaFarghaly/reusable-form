@@ -1,4 +1,3 @@
-// types.ts
 export interface FormFieldOption {
   label: string;
   value: string;
@@ -18,6 +17,11 @@ export interface FormField {
   gridLayout?: string;
   isDynamic?: boolean;
   validations?: FormValidation[];
+  uiSettings?: {
+    validationPosition?: "top" | "bottom" | "left" | "right";  
+    size?: "small" | "medium" | "large";  
+    iconEnabled?: boolean;  
+  };
 }
 
 export interface FormRow extends Array<FormField> {}

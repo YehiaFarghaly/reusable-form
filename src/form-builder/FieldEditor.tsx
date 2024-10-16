@@ -4,15 +4,7 @@ import ValidationEditor from "./ValidationEditor";
 import OptionEditor from "./OptionEditor";
 
 const fieldTypes = [
-    "text",
-    "number",
-    "email",
-    "select",
-    "slider",
-    "checkbox",
-    "radio",
-    "file",
-    "date",
+    "text", "number", "email", "select", "slider", "checkbox", "radio", "file", "date",
 ];
 
 interface FieldEditorProps {
@@ -22,13 +14,10 @@ interface FieldEditorProps {
 }
 
 const FieldEditor: React.FC<FieldEditorProps> = ({
-    field,
-    onChange,
-    onRemove,
+    field, onChange, onRemove
 }) => {
-    const [showOptions, setShowOptions] = useState(
-        field.type === "select" || field.type === "radio"
-    );
+    const [showOptions, setShowOptions] = useState(field.type === "select" || field.type === "radio");
+    const [showUISettings, setShowUISettings] = useState(false);
 
     const handleFieldChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -45,6 +34,13 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
     const handleDynamicToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange({ ...field, isDynamic: e.target.checked });
+    };
+
+    const handleUISettingsChange = (key: string, value: any) => {
+        onChange({
+            ...field,
+            uiSettings: { ...field.uiSettings, [key]: value },
+        });
     };
 
     return (
@@ -104,9 +100,14 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             {showOptions && (
                 <OptionEditor
                     options={field.options || []}
-                    onChange={(updatedOptions) => onChange({ ...field, options: updatedOptions })}
+                    onChange={(updatedOptions) =>
+                        onChange({ ...field, options: updatedOptions })
+                    }
                 />
             )}
+
+
+
             <div className="mb-2">
                 <label className="block text-sm">Grid Layout:</label>
                 <input
@@ -124,6 +125,54 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                     onChange({ ...field, validations: updatedValidations })
                 }
             />
+            <button
+                onClick={() => setShowUISettings(!showUISettings)}
+                className="text-blue-500 text-sm mb-2"
+            >
+                {showUISettings ? "Hide" : "Show"} UI Settings
+            </button>
+
+            {showUISettings && (
+                <div className="mb-2 border p-2 rounded bg-gray-100">
+                    <div className="mb-2">
+                        <label className="block text-sm">Validation Position:</label>
+                        <select
+                            value={field.uiSettings?.validationPosition || "top"}
+                            onChange={(e) =>
+                                handleUISettingsChange("validationPosition", e.target.value)
+                            }
+                            className="border p-1 w-full"
+                        >
+                            <option value="top">Top</option>
+                            <option value="bottom">Bottom</option>
+                            <option value="left">Left</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </div>
+                    <div className="mb-2">
+                        <label className="block text-sm">Size:</label>
+                        <select
+                            value={field.uiSettings?.size || "medium"}
+                            onChange={(e) => handleUISettingsChange("size", e.target.value)}
+                            className="border p-1 w-full"
+                        >
+                            <option value="small">Small</option>
+                            <option value="medium">Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+                    <div className="mb-2">
+                        <label className="block text-sm">Icon Enabled:</label>
+                        <input
+                            type="checkbox"
+                            checked={field.uiSettings?.iconEnabled || false}
+                            onChange={(e) =>
+                                handleUISettingsChange("iconEnabled", e.target.checked)
+                            }
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
