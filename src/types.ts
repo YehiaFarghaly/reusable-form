@@ -18,7 +18,7 @@ export interface FormField {
   isDynamic?: boolean;
   validations?: FormValidation[];
   uiSettings?: {
-    validationPosition?: "top" | "bottom" | "left" | "right";  
+    validationPosition?: "top" | "bottom";  
     size?: "small" | "medium" | "large";  
     iconEnabled?: boolean;  
   };

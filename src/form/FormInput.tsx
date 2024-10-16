@@ -51,7 +51,8 @@ const FormInput: React.FC<FormInputProps> = ({ field, register, error }) => {
             </SelectTrigger>
             <SelectContent>
               {field.options?.map((option, idx) => (
-                <SelectItem key={idx} value={option.value}>
+                <SelectItem key=
+                {idx} value={option.value}>
                   {option.label}
                 </SelectItem>
               ))}

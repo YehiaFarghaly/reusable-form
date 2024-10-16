@@ -145,8 +145,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                         >
                             <option value="top">Top</option>
                             <option value="bottom">Bottom</option>
-                            <option value="left">Left</option>
-                            <option value="right">Right</option>
+
                         </select>
                     </div>
                     <div className="mb-2">

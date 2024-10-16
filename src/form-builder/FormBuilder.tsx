@@ -49,7 +49,6 @@ const FormBuilder: React.FC<{
         <FormSection
           key={index}
           section={section}
-          sectionIndex={index}
           onUpdate={(updatedSection) => updateSection(index, updatedSection)}
           onRemove={() => removeSection(index)}
         />

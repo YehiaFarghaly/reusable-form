@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { FormField, FormSection as FormSectionType } from "../types";
 import FieldEditor from "./FieldEditor";
 
@@ -6,7 +5,6 @@ let ctr: number = 1;
 
 interface FormRowProps {
     row: FormSectionType["rows"][0];
-    sectionIndex: number;
     rowIndex: number;
     onUpdate: (row: FormSectionType["rows"][0]) => void;
     onRemoveRow: () => void;
@@ -14,7 +12,6 @@ interface FormRowProps {
 
 const FormRow: React.FC<FormRowProps> = ({
     row,
-    sectionIndex,
     rowIndex,
     onUpdate,
     onRemoveRow,
@@ -29,7 +26,7 @@ const FormRow: React.FC<FormRowProps> = ({
             uiSettings: {
                 validationPosition: "bottom",
                 size: "large",
-                iconEnabled: true
+                iconEnabled: false
             }
 
         };

@@ -4,14 +4,12 @@ import FormRow from "./FormRow";
 
 interface FormSectionProps {
   section: FormSectionType;
-  sectionIndex: number;
   onUpdate: (section: FormSectionType) => void;
   onRemove: () => void;
 }
 
 const FormSection: React.FC<FormSectionProps> = ({
   section,
-  sectionIndex,
   onUpdate,
   onRemove,
 }) => {
@@ -53,7 +51,6 @@ const FormSection: React.FC<FormSectionProps> = ({
         <FormRow
           key={rowIndex}
           row={row}
-          sectionIndex={sectionIndex}
           rowIndex={rowIndex}
           onUpdate={(updatedRow) => updateRow(rowIndex, updatedRow)}
           onRemoveRow={() => removeRow(rowIndex)}
