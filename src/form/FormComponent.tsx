@@ -5,6 +5,8 @@ import * as yup from "yup";
 import FormInput from "./FormInput";
 import Button from "./FormButton";
 import { FormSection } from "../types";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Progress } from "../components/ui/progress";
 
 type FormComponentProps = {
   formSections: FormSection[];
@@ -29,8 +31,8 @@ const FormComponent: React.FC<FormComponentProps> = ({
   });
 
   const [currentStep, setCurrentStep] = useState(0);
-
   const totalSteps = isMultiStep ? formSections.length : 1;
+  const progress = isMultiStep ? ((currentStep + 1) / totalSteps) * 100 : 100;
 
   const handleNext = async () => {
     if (isMultiStep) {
@@ -50,136 +52,157 @@ const FormComponent: React.FC<FormComponentProps> = ({
   };
 
   return (
-    <form
-      noValidate
-      onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-12 gap-6 bg-gray-200 p-6 rounded-lg"
-    >
-      {isMultiStep ? (
-        <>
-          <div className="col-span-12">
-            <h2 className="text-xl font-semibold mb-4">
-              {formSections[currentStep].sectionName}
-            </h2>
-            {formSections[currentStep].rows.map((row, rowIdx) => (
-              <div key={rowIdx} className="grid grid-cols-12 gap-6 mb-4">
-                {row.map((field) => {
-                  if (field.isDynamic) {
-                    return (
-                      <div key={field.name} className="col-span-12">
-                        {fields.map((item, index) => (
-                          <div key={item.id} className="flex items-center space-x-2 mb-2">
-                            <FormInput
-                              field={{
-                                name: `dynamicFields.${index}.value`,
-                                type: field.type,
-                                label: `${field.label} ${index + 1}`,
-                              }}
-                              register={register}
-                            />
+    <Card className="w-full shadow-md animate-fade-in">
+      {isMultiStep && (
+        <div className="px-6 pt-6">
+          <div className="flex justify-between items-center mb-2 text-sm text-muted-foreground">
+            <span>Step {currentStep + 1} of {totalSteps}</span>
+            <span>{formSections[currentStep].sectionName}</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
+      )}
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
+        {isMultiStep ? (
+          <div>
+            <CardHeader>
+              <CardTitle>{formSections[currentStep].sectionName}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {formSections[currentStep].rows.map((row, rowIdx) => (
+                  <div key={rowIdx} className="grid grid-cols-12 gap-6">
+                    {row.map((field) => {
+                      if (field.isDynamic) {
+                        return (
+                          <div key={field.name} className={field.gridLayout || "col-span-12"}>
+                            {fields.map((item, index) => (
+                              <div key={item.id} className="flex items-center space-x-2 mb-3">
+                                <div className="flex-1">
+                                  <FormInput
+                                    field={{
+                                      name: `dynamicFields.${index}.value`,
+                                      type: field.type,
+                                      label: `${field.label} ${index + 1}`,
+                                    }}
+                                    register={register}
+                                  />
+                                </div>
+                                <Button
+                                  text="Remove"
+                                  type="button"
+                                  onClick={() => remove(index)}
+                                  variant="destructive"
+                                  size="sm"
+                                />
+                              </div>
+                            ))}
                             <Button
-                              text="Remove"
+                              text={`Add ${field.label}`}
                               type="button"
-                              onClick={() => remove(index)}
+                              onClick={() => append({ value: "" })}
+                              variant="secondary"
+                              size="sm"
                             />
                           </div>
-                        ))}
-                        <Button
-                          text={`Add ${field.label}`}
-                          type="button"
-                          onClick={() => append({ value: "" })}
-                        />
-                      </div>
-                    );
-                  }
+                        );
+                      }
 
-                  return (
-                    <FormInput
-                      key={field.name}
-                      field={field}
-                      register={register}
-                      error={errors[field.name]?.message as string}
-                    />
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-          <div className="col-span-12 flex justify-between mt-4">
-            <Button
-              text="Previous"
-              type="button"
-              onClick={handlePrev}
-              disabled={currentStep === 0}
-            />
-            {currentStep === totalSteps - 1 ? (
-              <Button text="Submit" type="submit" />
-            ) : (
-              <Button text="Next" type="button" onClick={handleNext} />
-            )}
-          </div>
-          <div className="col-span-12 mt-2 text-center text-gray-500">
-            Step {currentStep + 1} of {totalSteps}
-          </div>
-        </>
-      ) : (
-        <>
-          {formSections.map((section, sectionIdx) => (
-            <div key={sectionIdx} className="col-span-12">
-              <h2 className="text-xl font-semibold mb-4">
-                {section.sectionName}
-              </h2>
-              {section.rows.map((row, rowIdx) => (
-                <div key={rowIdx} className="grid grid-cols-12 gap-6 mb-4">
-                  {row.map((field) => {
-                    if (field.isDynamic) {
                       return (
-                        <div key={field.name} className="col-span-12">
-                          {fields.map((item, index) => (
-                            <div key={item.id} className="flex items-center space-x-2 mb-2">
-                              <FormInput
-                                field={{
-                                  name: `dynamicFields.${index}.value`,
-                                  type: field.type,
-                                  label: `${field.label} ${index + 1}`,
-                                }}
-                                register={register}
-                              />
+                        <FormInput
+                          key={field.name}
+                          field={field}
+                          register={register}
+                          error={errors[field.name]?.message as string}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+                <div className="flex justify-between mt-6">
+                  <Button
+                    text="Previous"
+                    type="button"
+                    onClick={handlePrev}
+                    disabled={currentStep === 0}
+                    variant="outline"
+                  />
+                  {currentStep === totalSteps - 1 ? (
+                    <Button text="Submit" type="submit" variant="default" />
+                  ) : (
+                    <Button text="Next" type="button" onClick={handleNext} variant="default" />
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </div>
+        ) : (
+          <CardContent className="pt-6">
+            <div className="space-y-8">
+              {formSections.map((section, sectionIdx) => (
+                <div key={sectionIdx} className="space-y-6">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    {section.sectionName}
+                  </h2>
+                  {section.rows.map((row, rowIdx) => (
+                    <div key={rowIdx} className="grid grid-cols-12 gap-6">
+                      {row.map((field) => {
+                        if (field.isDynamic) {
+                          return (
+                            <div key={field.name} className={field.gridLayout || "col-span-12"}>
+                              {fields.map((item, index) => (
+                                <div key={item.id} className="flex items-center space-x-2 mb-3">
+                                  <div className="flex-1">
+                                    <FormInput
+                                      field={{
+                                        name: `dynamicFields.${index}.value`,
+                                        type: field.type,
+                                        label: `${field.label} ${index + 1}`,
+                                      }}
+                                      register={register}
+                                    />
+                                  </div>
+                                  <Button
+                                    text="Remove"
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    variant="destructive"
+                                    size="sm"
+                                  />
+                                </div>
+                              ))}
                               <Button
-                                text="Remove"
+                                text={`Add ${field.label}`}
                                 type="button"
-                                onClick={() => remove(index)}
+                                onClick={() => append({ value: "" })}
+                                variant="secondary"
+                                size="sm"
                               />
                             </div>
-                          ))}
-                          <Button
-                            text={`Add ${field.label}`}
-                            type="button"
-                            onClick={() => append({ value: "" })}
-                          />
-                        </div>
-                      );
-                    }
+                          );
+                        }
 
-                    return (
-                      <FormInput
-                        key={field.name}
-                        field={field}
-                        register={register}
-                        error={errors[field.name]?.message as string}
-                      />
-                    );
-                  })}
+                        return (
+                          <FormInput
+                            key={field.name}
+                            field={field}
+                            register={register}
+                            error={errors[field.name]?.message as string}
+                          />
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
               ))}
+              <div className="flex justify-end mt-6">
+                <Button text="Submit" type="submit" variant="default" />
+              </div>
             </div>
-          ))}
-          <div className="col-span-12 flex justify-end mt-4">
-            <Button text="Submit" type="submit" />
-          </div>
-        </>
-      )}
-    </form>
+          </CardContent>
+        )}
+      </form>
+    </Card>
   );
 };
 

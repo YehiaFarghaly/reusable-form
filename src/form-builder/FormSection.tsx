@@ -1,6 +1,10 @@
 import React from "react";
 import { FormSection as FormSectionType } from "../types";
 import FormRow from "./FormRow";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { PlusCircle, XCircle } from "lucide-react";
 
 interface FormSectionProps {
   section: FormSectionType;
@@ -35,31 +39,47 @@ const FormSection: React.FC<FormSectionProps> = ({
   };
 
   return (
-    <div className="mb-6 p-4 bg-white rounded">
-      <div className="flex justify-between items-center mb-2">
-        <input
-          type="text"
-          value={section.sectionName}
-          onChange={(e) => updateSectionName(e.target.value)}
-          className="border p-2 flex-1 mr-4"
-        />
-        <button onClick={onRemove} className="text-red-500">
-          Remove Section
-        </button>
-      </div>
-      {section.rows.map((row, rowIndex) => (
-        <FormRow
-          key={rowIndex}
-          row={row}
-          rowIndex={rowIndex}
-          onUpdate={(updatedRow) => updateRow(rowIndex, updatedRow)}
-          onRemoveRow={() => removeRow(rowIndex)}
-        />
-      ))}
-      <button onClick={addRow} className="text-blue-500 text-sm">
-        Add Row
-      </button>
-    </div>
+    <Card className="transition-all duration-200 hover:shadow-md">
+      <CardHeader className="pb-3 pt-4 px-4">
+        <div className="flex items-center justify-between gap-2">
+          <Input
+            type="text"
+            value={section.sectionName}
+            onChange={(e) => updateSectionName(e.target.value)}
+            className="font-medium text-lg"
+            placeholder="Section Name"
+          />
+          <Button 
+            onClick={onRemove} 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-destructive"
+          >
+            <XCircle className="h-5 w-5" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 px-4">
+        {section.rows.map((row, rowIndex) => (
+          <FormRow
+            key={rowIndex}
+            row={row}
+            rowIndex={rowIndex}
+            onUpdate={(updatedRow) => updateRow(rowIndex, updatedRow)}
+            onRemoveRow={() => removeRow(rowIndex)}
+          />
+        ))}
+        <Button 
+          onClick={addRow} 
+          variant="outline" 
+          size="sm" 
+          className="w-full mt-2 text-muted-foreground border-dashed"
+        >
+          <PlusCircle className="h-4 w-4 mr-2" /> 
+          Add Row
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -2,178 +2,276 @@ import React, { useState } from "react";
 import { FormField } from "../types";
 import ValidationEditor from "./ValidationEditor";
 import OptionEditor from "./OptionEditor";
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  CardFooter
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Switch } from "../components/ui/switch";
+import { Button } from "../components/ui/button";
+import { ChevronDown, ChevronUp, Settings, Trash2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../components/ui/accordion";
 
 const fieldTypes = [
-    "text", "number", "email", "select", "slider", "checkbox", "radio", "file", "date",
+  "text", "number", "email", "select", "slider", "checkbox", "radio", "file", "date",
 ];
 
 interface FieldEditorProps {
-    field: FormField;
-    onChange: (field: FormField) => void;
-    onRemove: () => void;
+  field: FormField;
+  onChange: (field: FormField) => void;
+  onRemove: () => void;
 }
 
 const FieldEditor: React.FC<FieldEditorProps> = ({
-    field, onChange, onRemove
+  field, onChange, onRemove
 }) => {
-    const [showOptions, setShowOptions] = useState(field.type === "select" || field.type === "radio");
-    const [showUISettings, setShowUISettings] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const showOptions = field.type === "select" || field.type === "radio";
 
-    const handleFieldChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
-        const { name, value } = e.target;
-        onChange({ ...field, [name]: value });
-        if (name === "type") {
-            setShowOptions(value === "select" || value === "radio");
-            if (!(value === "select" || value === "radio")) {
-                onChange({ ...field, type: value, options: [] });
-            }
-        }
-    };
+  const handleFieldChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    onChange({ ...field, [name]: value });
+  };
 
-    const handleDynamicToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange({ ...field, isDynamic: e.target.checked });
-    };
+  const handleFieldTypeChange = (value: string) => {
+    onChange({ 
+      ...field, 
+      type: value,
+      options: value === "select" || value === "radio" ? (field.options || []) : []
+    });
+  };
 
-    const handleUISettingsChange = (key: string, value: any) => {
-        onChange({
-            ...field,
-            uiSettings: { ...field.uiSettings, [key]: value },
-        });
-    };
+  const handleDynamicToggle = (checked: boolean) => {
+    onChange({ ...field, isDynamic: checked });
+  };
 
-    return (
-        <div className="border p-2 rounded">
-            <div className="flex justify-between items-center mb-2">
-                <h5 className="font-semibold">Field</h5>
-                <button onClick={onRemove} className="text-red-500">
-                    Remove
-                </button>
-            </div>
-            <div className="mb-2">
-                <label className="block text-sm">Label:</label>
-                <input
-                    type="text"
-                    name="label"
-                    value={field.label}
-                    onChange={handleFieldChange}
-                    className="border p-1 w-full"
-                />
-            </div>
-            <div className="mb-2">
-                <label className="block text-sm">Name:</label>
-                <input
-                    type="text"
-                    name="name"
-                    value={field.name}
-                    onChange={handleFieldChange}
-                    className="border p-1 w-full"
-                />
-            </div>
-            <div className="mb-2">
-                <input
-                    type="checkbox"
-                    name="isDynamic"
-                    checked={field.isDynamic || false}
-                    onChange={handleDynamicToggle}
-                    className="mr-2"
-                />
-                <span>Dynamic Field</span>
-            </div>
-            <div className="mb-2">
-                <label className="block text-sm">Type:</label>
-                <select
-                    name="type"
-                    value={field.type}
-                    onChange={handleFieldChange}
-                    className="border p-1 w-full"
-                >
-                    {fieldTypes.map((type) => (
-                        <option key={type} value={type}>
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                        </option>
-                    ))}
-                </select>
-            </div>
+  const handleUISettingsChange = (key: string, value: any) => {
+    onChange({
+      ...field,
+      uiSettings: { ...field.uiSettings, [key]: value },
+    });
+  };
 
+  return (
+    <Card className="transition-all duration-200 hover:shadow-sm">
+      <CardHeader className="px-4 py-3 flex flex-row items-center justify-between">
+        <CardTitle className="text-base font-medium">{field.label || "New Field"}</CardTitle>
+        <div className="flex items-center gap-1">
+          <Button 
+            onClick={() => setExpanded(!expanded)} 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0"
+          >
+            {expanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+          <Button 
+            onClick={onRemove} 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      
+      {expanded && (
+        <CardContent className="px-4 py-3 space-y-4">
+          <div className="grid gap-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor={`label-${field.name}`}>Label:</Label>
+              <Input
+                id={`label-${field.name}`}
+                type="text"
+                name="label"
+                value={field.label}
+                onChange={handleFieldChange}
+                placeholder="Field Label"
+              />
+            </div>
+            
+            <div className="grid gap-1.5">
+              <Label htmlFor={`name-${field.name}`}>Name:</Label>
+              <Input
+                id={`name-${field.name}`}
+                type="text"
+                name="name"
+                value={field.name}
+                onChange={handleFieldChange}
+                placeholder="field_name"
+              />
+            </div>
+            
+            <div className="grid gap-1.5">
+              <Label htmlFor={`type-${field.name}`}>Type:</Label>
+              <Select
+                value={field.type}
+                onValueChange={handleFieldTypeChange}
+              >
+                <SelectTrigger id={`type-${field.name}`}>
+                  <SelectValue placeholder="Select field type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fieldTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch
+                id={`dynamic-${field.name}`}
+                checked={field.isDynamic || false}
+                onCheckedChange={handleDynamicToggle}
+              />
+              <Label htmlFor={`dynamic-${field.name}`}>Dynamic Field</Label>
+            </div>
+            
+            <div className="grid gap-1.5">
+              <Label htmlFor={`grid-${field.name}`}>Grid Layout:</Label>
+              <Select
+                value={field.gridLayout || "col-span-12"}
+                onValueChange={(value) => onChange({ ...field, gridLayout: value })}
+              >
+                <SelectTrigger id={`grid-${field.name}`}>
+                  <SelectValue placeholder="Select grid width" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="col-span-12">Full Width</SelectItem>
+                  <SelectItem value="col-span-6">Half Width</SelectItem>
+                  <SelectItem value="col-span-4">One Third</SelectItem>
+                  <SelectItem value="col-span-3">One Quarter</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <Accordion type="single" collapsible className="w-full">
             {showOptions && (
-                <OptionEditor
+              <AccordionItem value="options">
+                <AccordionTrigger className="py-2">Options</AccordionTrigger>
+                <AccordionContent>
+                  <OptionEditor
                     options={field.options || []}
                     onChange={(updatedOptions) =>
-                        onChange({ ...field, options: updatedOptions })
+                      onChange({ ...field, options: updatedOptions })
                     }
-                />
+                  />
+                </AccordionContent>
+              </AccordionItem>
             )}
-
-
-
-            <div className="mb-2">
-                <label className="block text-sm">Grid Layout:</label>
-                <input
-                    type="text"
-                    name="gridLayout"
-                    value={field.gridLayout}
-                    onChange={handleFieldChange}
-                    placeholder="e.g., col-span-6"
-                    className="border p-1 w-full"
-                />
-            </div>
-            <ValidationEditor
-                validations={field.validations || []}
-                onChange={(updatedValidations) =>
+            
+            <AccordionItem value="validations">
+              <AccordionTrigger className="py-2">Validations</AccordionTrigger>
+              <AccordionContent>
+                <ValidationEditor
+                  validations={field.validations || []}
+                  onChange={(updatedValidations) =>
                     onChange({ ...field, validations: updatedValidations })
-                }
-            />
-            <button
-                onClick={() => setShowUISettings(!showUISettings)}
-                className="text-blue-500 text-sm mb-2"
-            >
-                {showUISettings ? "Hide" : "Show"} UI Settings
-            </button>
-
-            {showUISettings && (
-                <div className="mb-2 border p-2 rounded bg-gray-100">
-                    <div className="mb-2">
-                        <label className="block text-sm">Validation Position:</label>
-                        <select
-                            value={field.uiSettings?.validationPosition || "top"}
-                            onChange={(e) =>
-                                handleUISettingsChange("validationPosition", e.target.value)
-                            }
-                            className="border p-1 w-full"
-                        >
-                            <option value="top">Top</option>
-                            <option value="bottom">Bottom</option>
-
-                        </select>
-                    </div>
-                    <div className="mb-2">
-                        <label className="block text-sm">Size:</label>
-                        <select
-                            value={field.uiSettings?.size || "medium"}
-                            onChange={(e) => handleUISettingsChange("size", e.target.value)}
-                            className="border p-1 w-full"
-                        >
-                            <option value="small">Small</option>
-                            <option value="medium">Medium</option>
-                            <option value="large">Large</option>
-                        </select>
-                    </div>
-                    <div className="mb-2">
-                        <label className="block text-sm">Icon Enabled:</label>
-                        <input
-                            type="checkbox"
-                            checked={field.uiSettings?.iconEnabled || false}
-                            onChange={(e) =>
-                                handleUISettingsChange("iconEnabled", e.target.checked)
-                            }
-                        />
-                    </div>
+                  }
+                />
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="ui-settings">
+              <AccordionTrigger className="py-2">
+                <div className="flex items-center">
+                  <Settings className="h-4 w-4 mr-2" />
+                  UI Settings
                 </div>
-            )}
-        </div>
-    );
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-3 pt-2">
+                  <div className="grid gap-1.5">
+                    <Label htmlFor={`validation-pos-${field.name}`}>Validation Position:</Label>
+                    <Select
+                      value={field.uiSettings?.validationPosition || "bottom"}
+                      onValueChange={(value) => 
+                        handleUISettingsChange("validationPosition", value)
+                      }
+                    >
+                      <SelectTrigger id={`validation-pos-${field.name}`}>
+                        <SelectValue placeholder="Select position" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="top">Top</SelectItem>
+                        <SelectItem value="bottom">Bottom</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="grid gap-1.5">
+                    <Label htmlFor={`size-${field.name}`}>Size:</Label>
+                    <Select
+                      value={field.uiSettings?.size || "medium"}
+                      onValueChange={(value) => 
+                        handleUISettingsChange("size", value)
+                      }
+                    >
+                      <SelectTrigger id={`size-${field.name}`}>
+                        <SelectValue placeholder="Select size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="small">Small</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="large">Large</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id={`icon-${field.name}`}
+                      checked={field.uiSettings?.iconEnabled || false}
+                      onCheckedChange={(checked) =>
+                        handleUISettingsChange("iconEnabled", checked)
+                      }
+                    />
+                    <Label htmlFor={`icon-${field.name}`}>Show Icon</Label>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      )}
+      
+      {!expanded && (
+        <CardFooter className="px-4 py-2 text-xs text-muted-foreground">
+          {field.type.charAt(0).toUpperCase() + field.type.slice(1)}
+          {field.validations && field.validations.some(v => v.type === "required") && 
+            " • Required"}
+          {field.isDynamic && " • Dynamic"}
+        </CardFooter>
+      )}
+    </Card>
+  );
 };
 
 export default FieldEditor;

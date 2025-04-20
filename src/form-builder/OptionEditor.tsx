@@ -1,5 +1,8 @@
 import React from "react";
 import { FormFieldOption } from "../types";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Plus, Trash2 } from "lucide-react";
 
 interface OptionEditorProps {
   options: FormFieldOption[];
@@ -18,7 +21,7 @@ const OptionEditor: React.FC<OptionEditorProps> = ({ options, onChange }) => {
   };
 
   const addOption = () => {
-    const newOption: FormFieldOption = { label: "label", value: "value" };
+    const newOption: FormFieldOption = { label: "New Option", value: `option_${options.length + 1}` };
     onChange([...options, newOption]);
   };
 
@@ -29,39 +32,53 @@ const OptionEditor: React.FC<OptionEditorProps> = ({ options, onChange }) => {
   };
 
   return (
-    <div className="mb-2">
-      <label className="block text-sm">Options:</label>
+    <div className="space-y-3">
+      {options.length === 0 && (
+        <div className="text-center p-3 border border-dashed rounded-md border-muted-foreground/30 text-muted-foreground text-sm">
+          No options added yet
+        </div>
+      )}
+      
       {options.map((option, index) => (
-        <div key={index} className="flex items-center mb-1">
-          <input
+        <div key={index} className="flex items-center gap-2">
+          <Input
             type="text"
             value={option.label}
             onChange={(e) =>
               handleOptionChange(index, "label", e.target.value)
             }
             placeholder="Label"
-            className="border p-1 mr-2 flex-1"
+            className="flex-1"
           />
-          <input
+          <Input
             type="text"
             value={option.value}
             onChange={(e) =>
               handleOptionChange(index, "value", e.target.value)
             }
             placeholder="Value"
-            className="border p-1 mr-2 flex-1"
+            className="flex-1"
           />
-          <button
+          <Button
             onClick={() => removeOption(index)}
-            className="text-red-500"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
           >
-            Remove
-          </button>
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
       ))}
-      <button onClick={addOption} className="text-purple-500 text-sm">
+      
+      <Button
+        onClick={addOption}
+        variant="outline"
+        size="sm"
+        className="w-full mt-2 border-dashed"
+      >
+        <Plus className="h-4 w-4 mr-2" />
         Add Option
-      </button>
+      </Button>
     </div>
   );
 };

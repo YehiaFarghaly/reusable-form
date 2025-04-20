@@ -1,21 +1,33 @@
 import React from "react";
+import { Button as ShadcnButton } from "../components/ui/button";
 
 type ButtonProps = {
-    text: string;
-    onClick?: () => void;
-    type: 'submit' | 'reset' | 'button';
-    disabled?: boolean
+  text: string;
+  onClick?: () => void;
+  type: 'submit' | 'reset' | 'button';
+  disabled?: boolean;
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
 };
 
-const FormButton: React.FC<ButtonProps> = ({ text, onClick, type, disabled}) => (
-    <button
-        type={type}
-        className={`mt-2 py-2 px-6 bg-purple-500 text-white rounded-lg transform transition-transform duration-200 hover:scale-105 focus:ring-2 focus:ring-indigo-300`}
-        onClick={onClick}
-        disabled={disabled}
-    >
-        {text}
-    </button>
+const FormButton: React.FC<ButtonProps> = ({ 
+  text, 
+  onClick, 
+  type, 
+  disabled = false,
+  variant = 'default',
+  size = 'default'
+}) => (
+  <ShadcnButton
+    type={type}
+    onClick={onClick}
+    disabled={disabled}
+    variant={variant}
+    size={size}
+    className="transition-all duration-200 hover:shadow-md"
+  >
+    {text}
+  </ShadcnButton>
 );
 
 export default FormButton;
